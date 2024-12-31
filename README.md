@@ -64,7 +64,7 @@ from pyannote.audio import Pipeline
 def perform_diarization(audio_array, sample_rate):
     diarization = Pipeline.from_pretrained(
         "pyannote/speaker-diarization",
-        use_auth_token="YOUR_AUTH_TOKEN"
+        use_auth_token="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"
     )
     
     # Run diarization
@@ -222,4 +222,4 @@ Implementation Notes:
 7. Consider adding a simple status monitoring system
 8. Implement proper error handling and logging
 
-Would you like me to elaborate on any specific part of the implementation?
+HUGGINGFACE_TOKEN = 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
