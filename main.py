@@ -1,5 +1,5 @@
 import os
-from src import JapaneseConversationProcessor
+from src.processor import JapaneseConversationProcessor
 
 def main():
     """
