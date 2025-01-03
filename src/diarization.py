@@ -1,6 +1,7 @@
 from pyannote.audio import Pipeline
 import numpy as np
 import torch
+import os
 
 def perform_diarization(audio_array, sample_rate):
     """
@@ -18,8 +19,9 @@ def perform_diarization(audio_array, sample_rate):
         try:
             diarization = Pipeline.from_pretrained(
                 "pyannote/speaker-diarization",
-                use_auth_token="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"  # Replace with actual token
+                use_auth_token=os.getenv("HUGGINGFACE_TOKEN")  # Replace with actual token
             )
+            
         except Exception as e:
             raise Exception(
                 "Failed to initialize diarization pipeline. "

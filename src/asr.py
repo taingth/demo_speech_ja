@@ -1,13 +1,15 @@
 import torch
 from faster_whisper import WhisperModel
+from pydantic import BaseModel
+from typing import Literal
 
 class ASRProcessor:
     """
     Handle speech recognition using faster-whisper.
     """
-    def __init__(self):
+    def __init__(self, model_name: str):
         self.model = WhisperModel(
-            "medium",
+            "distil-large-v3",
             device="cuda" if torch.cuda.is_available() else "cpu",
             compute_type="float32"
         )

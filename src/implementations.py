@@ -7,6 +7,11 @@ import scipy.signal
 from faster_whisper import WhisperModel
 from pyannote.audio import Pipeline
 from .pipeline import AudioPreprocessor, SpeechDetector, SpeakerDiarizer, SpeechRecognizer
+import os
+from reazonspeech.nemo.asr import load_model, transcribe, audio_from_path
+import nue_asr
+from diarizers import SegmentationModel
+
 
 class LibrosaPreprocessor(AudioPreprocessor):
     """Concrete audio preprocessor using librosa"""
@@ -73,9 +78,10 @@ class PyannoteDiarizer(SpeakerDiarizer):
     """Concrete speaker diarizer using pyannote.audio"""
     def __init__(self):
         self.pipeline = Pipeline.from_pretrained(
-            "pyannote/speaker-diarization",
-            use_auth_token="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"
+            "pyannote/speaker-diarization-3.1",
+            use_auth_token=os.getenv("HUGGINGFACE_TOKEN")
         )
+        self.segmentation_model = SegmentationModel().from_pretrained('diarizers-community/speaker-segmentation-fine-tuned-callhome-jpn')
     
     def diarize(self, audio: np.ndarray, sample_rate: int) -> List[Dict[str, Any]]:
         waveform = torch.from_numpy(audio)[None, :]
@@ -117,3 +123,25 @@ class WhisperASR(SpeechRecognizer):
             vad_filter=True
         )
         return [seg.text for seg in segments]
+
+class ReazonASR(SpeechRecognizer):
+    """Concrete speech recognizer using ReazonSpeech lib"""
+    def __init__(self) -> None:
+        self.model = load_model()
+    
+    def transcribe(self, audio: np.ndarray, sample_rate: int) -> Any:
+        ret = transcribe(model=self.model, audio=audio)
+        return ret.text
+
+class NueAsr(SpeechRecognizer):
+    """Concrete speech recognizer using Nue ASR"""
+    def __init__(self) -> None:
+        self.model = nue_asr.load_model("rinna/nue-asr", use_deepspeed=True)
+        self.tokenizer = nue_asr.load_tokenizer("rinna/nue-asr")
+    
+    def transcribe(self, audio: np.ndarray, sample_rate: int) -> Any:
+        return nue_asr.transcribe(
+            model=self.model,
+            tokenizer=self.tokenizer,
+            audio=audio
+        ).text

@@ -1,5 +1,12 @@
 import os
 from src.processor import JapaneseConversationProcessor
+from dotenv import load_dotenv
+from .src.model import PipelineName
+
+
+# Load env from .env file
+load_dotenv()
+
 
 def main():
     """
@@ -10,7 +17,7 @@ def main():
         print("========================================")
         
         # Initialize processor
-        processor = JapaneseConversationProcessor()
+        processor = JapaneseConversationProcessor(PipelineName(name="kotoba"))
         
         # Get audio path from user
         audio_path = input("\nEnter the path to your audio file: ")

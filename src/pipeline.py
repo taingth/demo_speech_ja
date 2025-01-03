@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import List, Dict, Any
 import numpy as np
+from transformers import pipeline
 
 class AudioPreprocessor(ABC):
     """Abstract base class for audio preprocessing"""
@@ -36,7 +37,7 @@ class SpeechRecognizer(ABC):
         """Transcribe audio"""
         pass
 
-class ConversationProcessor:
+class StepsByStepsConversationProcessor:
     """Main pipeline for processing conversations"""
     def __init__(self,
                  preprocessor: AudioPreprocessor,
@@ -48,7 +49,7 @@ class ConversationProcessor:
         self.diarizer = diarizer
         self.recognizer = recognizer
 
-    def process_conversation(self, audio_path: str) -> List[Dict[str, Any]]:
+    def process_conversation(self, audio_path: str) -> Any:
         """Process a conversation audio file"""
         # 1. Preprocess audio
         audio, sr = self.preprocessor.process(audio_path)
@@ -83,4 +84,4 @@ class ConversationProcessor:
         
         # Sort results by start time
         all_results.sort(key=lambda x: x['start_time'])
-        return all_results
+        return str(all_results)
